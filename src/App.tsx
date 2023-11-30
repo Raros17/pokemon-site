@@ -10,9 +10,9 @@ import {dark, light} from "./styles/theme"
 const queryClient = new QueryClient();
 
 function App() {
-  const theme = useSelector((state: RootState) => state.theme.theme);
+  const theme = useSelector((state: RootState) => state.theme.darkTheme);
   return <QueryClientProvider client={queryClient}>
-    <ThemeProvider theme={theme ==='dark' ? dark : light}>
+    <ThemeProvider theme={theme ? dark : light}>
   <section id="home-section" style={{height:"100%", position:"relative", backgroundColor:"red"}}>    
     <Nav/>
     <Sidebar/>
