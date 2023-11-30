@@ -7,6 +7,7 @@ import { toggleTheme } from "./store/themeSlice";
 
 function Nav() {
   const dispatch = useDispatch();
+  
     return   <MenuNav>   
       <PokemonLogo/>
       <div style={{width:"100%", display:"flex", justifyContent:"center"}}>
@@ -35,7 +36,7 @@ function Nav() {
   export default Nav;
 
   const MenuNav = styled.section`
-  background-color: #f3f4f2;
+  background-color: ${({ theme }) => theme.color.backgroundSub};
   text-align: center;
   display: flex;
   justify-content: space-between;

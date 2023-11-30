@@ -13,11 +13,10 @@ const queryClient = new QueryClient();
 function App() {
   const isDarkTheme = useSelector((state: RootState) => state.theme.darkTheme);
   const theme = isDarkTheme ? dark : light;
-  console.log(theme.color.background);
   return <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
     <GlobalStyles />
-  <section id="home-section" style={{height:"100%", position:"relative", backgroundColor:"red"}}>    
+  <section id="home-section" style={{height:"100%", position:"relative"}}>    
     <Nav/>
     <Sidebar/>
     <CardListSection >
@@ -31,8 +30,7 @@ export default App;
 
 const CardListSection = styled.section`
   padding: 50px 50px 150px 150px;
-  background-color: ${({ theme }) => theme.color.background};
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   display: flex;
 `;

@@ -22,7 +22,7 @@ function Card({name, url, onClick}: PokeData): JSX.Element {
   export default Card;
 
 const CardSection = styled.section`
-  background-color: #f3f4f2;
+  background-color: ${({ theme }) => theme.color.cardBackground};
   border-radius: 5px;
   width: 250px;
   height: 300px;
@@ -51,12 +51,13 @@ const CardSection = styled.section`
     font-size: 22px;
     padding: 1rem 0 0.5rem 0;
     text-align: center;
+    color:${({ theme }) => theme.color.text};
   }
    p {
     font-size: 11px;
     font-weight: 500;
     text-align: center;
-    color: #535353;
+    color: ${({ theme }) => theme.color.text};
    }
 `;
 

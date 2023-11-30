@@ -19,12 +19,12 @@ function Sidebar() {
   position: absolute;
   left: 0;
   z-index: 99;
-  background-color: #fec20c;
+  background-color: ${({ theme }) => theme.color.sideBackground};
   display: flex;
   flex-direction: column;
   p{
     font-size: 20px;
-    color: #2d4596;
+    color: ${({ theme }) => theme.color.subText};
     margin: 15px 5px;
     font-weight: 600;
     cursor: pointer;
