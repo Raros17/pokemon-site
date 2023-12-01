@@ -3,6 +3,7 @@ import { openModal } from "./store/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import CardModal from "./CardModal";
+import { useState } from "react";
 
   interface CardListProps {
     detailData: PokemonDetail
@@ -90,6 +91,12 @@ import CardModal from "./CardModal";
       pokemons = [detailData];
     }
 
+    const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetail | null>(null);
+    const handleOpenModal = (pokemon: PokemonDetail) => {
+      setSelectedPokemon(pokemon);
+      dispatch(openModal());
+    };
+
     return (
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
         {pokemons.map((pokemon: PokemonDetail, index: number) => (
@@ -98,10 +105,12 @@ import CardModal from "./CardModal";
           name={pokemon.name}
           type={pokemon.types}
           imgUrl={pokemon.sprites.front_default}
-          onClick={() => dispatch(openModal())}
+          onClick={() => handleOpenModal(pokemon)}
         />
       ))}   
-      {isOpen && <CardModal />}
+      {isOpen && selectedPokemon&& (
+        <CardModal pokemon={selectedPokemon} />
+      )}
       </div>
     );
   }
