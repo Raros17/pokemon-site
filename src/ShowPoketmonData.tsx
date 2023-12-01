@@ -11,7 +11,6 @@ function ShowPoketmonData(): JSX.Element {
     const [pokeNum, setPokeNum] = useState(0);
     const [showCard, setShowCard] = useState(12);
     const [apiUrl, setApiUrl] = useState(`https://pokeapi.co/api/v2/pokemon?limit=${showCard}&offset=0`);
-    console.log(`포켓몬리스트: ${apiUrl}`)
 
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = parseInt(event.target.value, 10);
@@ -47,20 +46,18 @@ function ShowPoketmonData(): JSX.Element {
       //이 부분 아직 헷갈림.....
       queryFn: () => Promise.all(namesArray.map((name) => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/${name}`))),
     });
-    console.log(pokemonDetailData)
-//sprites.front_default
     if (isLoading || detailLoading) return <span>Loading...</span>
     if (isError || detailError) return <span>Error! 데이터를 받아오는데 문제가 발생했습니다.</span>
 
     return (
       <>
         <SelectCardNum value={showCard} onChange={handleSelectChange}>
-                <option value="6">6</option>
+                <option value="8">8</option>
                 <option value="12">12</option>
-                <option value="18">18</option>
+                <option value="16">16</option>
         </SelectCardNum>
         <PageBtn onClick={() => { beforePageUrl(); refetch()}}><BiLeftArrow/></PageBtn>
-        <CardList data={pokemonData} detailData={pokemonDetailData}></CardList>
+        <CardList detailData={pokemonDetailData}></CardList>
         <PageBtn onClick={() => { nextPageUrl(); refetch()}}><BiRightArrow/></PageBtn>
       </>      
     )  
@@ -70,12 +67,12 @@ function ShowPoketmonData(): JSX.Element {
 
 
   const PageBtn = styled.button`
-  width: 100px;
+  width: 80px;
   border-radius: 10px;
   height: 80px;
   align-items: center;
   color: #fff;
-  font-size: 30px;
+  font-size: 50px;
   margin-top: 300px;
   cursor: pointer;
   transition: all 0.3s ease;

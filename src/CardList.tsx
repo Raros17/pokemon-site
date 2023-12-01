@@ -98,20 +98,22 @@ import { useState } from "react";
     };
 
     return (
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between" }}>
-        {pokemons.map((pokemon: PokemonDetail, index: number) => (
-        <Card
-          key={index}
-          name={pokemon.name}
-          type={pokemon.types}
-          imgUrl={pokemon.sprites.front_default}
-          onClick={() => handleOpenModal(pokemon)}
-        />
-      ))}   
-      {isOpen && selectedPokemon&& (
-        <CardModal pokemon={selectedPokemon} />
-      )}
-      </div>
+      <section style={{display:"flex", justifyContent:"center", width:"100%"}}>
+        <div style={{ display: "grid", gridTemplateColumns:"repeat(4,1fr)", gap:"60px"}}>
+          {pokemons.map((pokemon: PokemonDetail, index: number) => (
+          <Card
+            key={index}
+            name={pokemon.name}
+            type={pokemon.types}
+            imgUrl={pokemon.sprites.front_default}
+            onClick={() => handleOpenModal(pokemon)}
+          />
+        ))}
+        {isOpen && selectedPokemon&& (
+          <CardModal pokemon={selectedPokemon} />
+        )}
+        </div>
+      </section>
     );
   }
 
