@@ -32,22 +32,23 @@ function ShowPoketmonData(): JSX.Element {
       setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=${showCard}&offset=${beforePokeList}`)
     }
 
-    const {isLoading, isError, data, refetch} = useQuery({
+    const {isLoading, isError, data: pokemonData, refetch} = useQuery({
       queryKey: ['pokemonsDataList'],
       queryFn: ()=> getPoketmonDataApi(apiUrl),
       staleTime: 100,
-      cacheTime: 5000,
-      //캐시타임이랑 바로 데이터 반영 안 되는 게 연관이 있는 것 같은데...
+      cacheTime: 5000, 
       refetchOnWindowFocus: false,
     })
 
-    const { isLoading: detailLoading, isError: detailError, data: pokemonDetailData } = useQuery({
-      queryKey: ['pokemonsDetailList'],  // Include the selected Pokémon's name in the query key
-      queryFn: () => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/1/`)
-    });
-    // console.log(pokemonDetailData.id)
-    // console.log(pokemonDetailData.sprites.front_default)
+    const namesArray: string[] = pokemonData?.results?.map((pokemon : {name: string})=>pokemon.name);
 
+    const { isLoading: detailLoading, isError: detailError, data: pokemonDetailData } = useQuery({
+      queryKey: ['pokemonsDetailList', namesArray],
+      //이 부분 아직 헷갈림.....
+      queryFn: () => Promise.all(namesArray.map((name) => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/${name}`))),
+    });
+    console.log(pokemonDetailData)
+//sprites.front_default
     if (isLoading || detailLoading) return <span>Loading...</span>
     if (isError || detailError) return <span>Error! 데이터를 받아오는데 문제가 발생했습니다.</span>
 
@@ -59,7 +60,7 @@ function ShowPoketmonData(): JSX.Element {
                 <option value="18">18</option>
         </SelectCardNum>
         <PageBtn onClick={() => { beforePageUrl(); refetch()}}><BiLeftArrow/></PageBtn>
-        <CardList data={data} ></CardList>
+        <CardList data={pokemonData} detailData={pokemonDetailData}></CardList>
         <PageBtn onClick={() => { nextPageUrl(); refetch()}}><BiRightArrow/></PageBtn>
       </>      
     )  

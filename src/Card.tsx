@@ -1,20 +1,28 @@
 import styled from "styled-components";
 interface PokeData {
     name: string;
-    url: string;
+    imgUrl: string;
+    type: PokemonType[]
     onClick: () => void;
   }
 
-function Card({name, url, onClick}: PokeData): JSX.Element {
+  interface PokemonType {
+    slot: number;
+    type: {
+      name: string;
+      url: string;
+    };
+  }
+
+function Card({name, imgUrl, type, onClick}: PokeData): JSX.Element {
     return   <>    
     <CardSection onClick={onClick}>
-        <img src={`./`} alt='pokemon-img'/>
-        {/*https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/2.gif 이쪽도 참고*/}
+        <img src={`${imgUrl}`} alt='pokemon-img'/>
         <h2 id="pokemon-name">{name}</h2>
-        <p>{url}</p>
         <div style={{display:"flex", justifyContent:"space-between"}}>            
-            <SkillBtn>Fire</SkillBtn>
-            <SkillBtn>Water</SkillBtn>            
+        {type.map((pokemonType, index) => (
+            <SkillBtn key={index}>{pokemonType.type.name}</SkillBtn>
+          ))}
         </div>
     </CardSection>
     </>
@@ -62,7 +70,7 @@ const CardSection = styled.section`
 `;
 
 const SkillBtn = styled.button`
-  background-color: #ff7777;
+  background-color: ${({ theme }) => theme.color.cardBtn};
   width: 100px;
   height: 25px;
   border-radius: 30px;

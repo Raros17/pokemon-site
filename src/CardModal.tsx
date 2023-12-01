@@ -37,17 +37,20 @@ const ContentSection = styled.section`
   position: fixed;
   width: 50%;
   height: 80%;
-  background: #fff;
+  background: ${({ theme }) => theme.color.cardBackground};
   padding: 5rem;
   border-radius: 30px;
+  color: ${({ theme }) => theme.color.text};
+  font-family: 'Roboto Slab', Georgia, 'Times New Roman', Times, serif;  
   img {
     width: 100%;
     height: 30%;
     margin-top: 4rem;
   }
   h3 {
-    font-size: 27px;
+    font-size: 40px;
     font-weight: 600;    
+    text-align: center;
   }
   p{
       font-size: 16px;

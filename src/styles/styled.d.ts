@@ -9,6 +9,7 @@ declare module 'styled-components/native' {
       backgroundSub: string;
       cardBackground: string;
       sideBackground: string;
+      cardBtn: string;
     };
   }
 }
