@@ -12,12 +12,15 @@ function ShowPoketmonData(): JSX.Element {
     const [showCard, setShowCard] = useState(12);
     const [apiUrl, setApiUrl] = useState(`https://pokeapi.co/api/v2/pokemon?limit=${showCard}&offset=0`);
 
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = parseInt(event.target.value, 10);
       setShowCard(selectedValue)
       setPokeNum(0);
-      setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=${selectedValue}&offset=0`)
+      await setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=${selectedValue}&offset=0`);
+      refetch()
     }
+    //setApiUrl은 비동기로 동작하지 않으므로 refetch가 호출되기 전에 apiUrl이 업데이트되지 않을 수 있습니다.
+    //async await로 refetch()실행. setApiUrl이 완료될 때까지 기다린 후에 refetch를 호출
 
     const nextPageUrl = () =>{
       const nextPokeList = pokeNum + showCard;

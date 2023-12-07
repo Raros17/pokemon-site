@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { closeModal } from "./store/modalSlice";
 import { useDispatch } from "react-redux";
+import { useQuery } from "react-query";
+import { getPoketInfo } from "./getPoketInfo";
 
 interface PokemonDetail {
   abilities: Ability[];
@@ -79,8 +81,16 @@ interface CardModalProps {
 
 function CardModal({  pokemon }: CardModalProps): JSX.Element | null {
   const dispatch = useDispatch();
+  console.log(pokemon?.species.url)
 
-  console.log(pokemon)
+  const {data: pokemonInfo} = useQuery({
+    queryKey: ['pokemonInfo'],   
+    queryFn: ()=> getPoketInfo(pokemon?.species.url || ''),
+    staleTime: 100,
+    cacheTime: 5000, 
+    refetchOnWindowFocus: false,
+  })
+   console.log(pokemonInfo.flavor_text_entries)
 
   if (!pokemon) {
     return null;
@@ -101,7 +111,6 @@ function CardModal({  pokemon }: CardModalProps): JSX.Element | null {
               <SkillBtn key={index}>{pokemonType.type.name}</SkillBtn>
             ))}
           </div>
-          <p>왜 없지....</p>
           <ShinySection>
             <img style={{width:'100px'}}src={pokemon.sprites.front_shiny}></img>
             <img style={{width:'100px'}}src={pokemon.sprites.back_shiny}></img>
