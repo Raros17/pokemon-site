@@ -46,7 +46,12 @@ function ShowPoketmonData(): JSX.Element {
       //이 부분 아직 헷갈림.....
       queryFn: () => Promise.all(namesArray.map((name) => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/${name}`))),
     });
-    if (isLoading || detailLoading) return <span>Loading...</span>
+    if (isLoading || detailLoading) return (
+    <LoadingSection>
+      <img src="./src/assets/image/loading_img.gif"></img>
+      </LoadingSection>
+    )
+
     if (isError || detailError) return <span>Error! 데이터를 받아오는데 문제가 발생했습니다.</span>
 
     return (
@@ -80,6 +85,16 @@ function ShowPoketmonData(): JSX.Element {
     background-color: #86beff;
     transition: all 0.3s ease;
   }
+`;
+
+const LoadingSection = styled.section`
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+img{
+  height: 20%;
+}
 `;
 
 const SelectCardNum = styled.select`
