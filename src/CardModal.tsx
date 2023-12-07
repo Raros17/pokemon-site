@@ -83,14 +83,21 @@ function CardModal({  pokemon }: CardModalProps): JSX.Element | null {
   const dispatch = useDispatch();
   console.log(pokemon?.species.url)
 
-  const {data: pokemonInfo} = useQuery({
+  const {isLoading, isError, data: pokemonInfo} = useQuery({
     queryKey: ['pokemonInfo'],   
     queryFn: ()=> getPoketInfo(pokemon?.species.url || ''),
-    staleTime: 100,
-    cacheTime: 5000, 
+    staleTime: 0,
+    cacheTime: 0, 
     refetchOnWindowFocus: false,
   })
-   console.log(pokemonInfo.flavor_text_entries)
+  console.log(pokemonInfo?.flavor_text_entries[1]?.flavor_text)
+  if(isLoading){
+    return <p>Loading... wait a little...</p>
+  }
+  
+  if (isError) {
+    return <p>Error! Cannot find data...</p>;
+  }
 
   if (!pokemon) {
     return null;
@@ -111,6 +118,7 @@ function CardModal({  pokemon }: CardModalProps): JSX.Element | null {
               <SkillBtn key={index}>{pokemonType.type.name}</SkillBtn>
             ))}
           </div>
+          <PokemonInfos>{pokemonInfo?.flavor_text_entries && pokemonInfo.flavor_text_entries[1]?.flavor_text}</PokemonInfos>
           <ShinySection>
             <img style={{width:'100px'}}src={pokemon.sprites.front_shiny}></img>
             <img style={{width:'100px'}}src={pokemon.sprites.back_shiny}></img>
@@ -149,6 +157,11 @@ const PokemonNumber = styled.h2`
   font-weight: 600;
   color: ${({ theme }) => theme.color.text};
   margin-bottom: 0.1rem;
+`
+
+const PokemonInfos = styled.h6`
+  font-size: 23px;
+  line-height: 1.5;
 `
 const PokemonName = styled.h3`
   font-size: 30px;
