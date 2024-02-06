@@ -6,7 +6,7 @@ import CardModal from "./CardModal";
 import { useState } from "react";
 
   interface CardListProps {
-    detailData: PokemonDetail[]
+    detailData: PokemonDetail[] | undefined;
   }
 
   interface Ability {
