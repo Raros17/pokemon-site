@@ -29,8 +29,6 @@ function App() {
 export default App;
 
 const CardListSection = styled.section`
-  padding: 50px 50px 150px 150px;
-  height: 100vh;
-  width: 100vw;
+  padding: 50px 20px 150px 150px;
   display: flex;
 `;

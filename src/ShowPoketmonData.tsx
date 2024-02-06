@@ -55,7 +55,7 @@ function ShowPoketmonData(): JSX.Element {
         if (namesArray.length > 0) {
           return Promise.all(namesArray.map((name) => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/${name}`)))
         } else {
-          return Promise.resolve([]); // 또는 빈 배열 또는 다른 초기값으로 처리
+          return Promise.resolve([]);
         }
       },
     });
