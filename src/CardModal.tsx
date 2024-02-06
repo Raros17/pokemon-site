@@ -81,8 +81,6 @@ interface CardModalProps {
 
 function CardModal({  pokemon }: CardModalProps): JSX.Element | null {
   const dispatch = useDispatch();
-  console.log(pokemon?.species.url)
-
   const {isLoading, isError, data: pokemonInfo} = useQuery({
     queryKey: ['pokemonInfo'],   
     queryFn: ()=> getPoketInfo(pokemon?.species.url || ''),
@@ -90,7 +88,6 @@ function CardModal({  pokemon }: CardModalProps): JSX.Element | null {
     cacheTime: 0, 
     refetchOnWindowFocus: false,
   })
-  console.log(pokemonInfo?.flavor_text_entries[1]?.flavor_text)
   if(isLoading){
     return <p>Loading... wait a little...</p>
   }

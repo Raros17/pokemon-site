@@ -30,8 +30,12 @@ function ShowPoketmonData(): JSX.Element {
 
     const beforePageUrl = () =>{
       const beforePokeList = pokeNum - showCard;
-      setPokeNum(beforePokeList>=0?beforePokeList:0);
-      setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=${showCard}&offset=${beforePokeList}`)
+      if (beforePokeList >= 0) {
+        setPokeNum(beforePokeList);
+        setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=${showCard}&offset=${beforePokeList}`);
+      } else if(beforePokeList<0){
+        alert('첫번째 페이지입니다!')
+      }
     }
 
     const {isLoading, isError, data: pokemonData, refetch} = useQuery({
@@ -42,12 +46,18 @@ function ShowPoketmonData(): JSX.Element {
       refetchOnWindowFocus: false,
     })
 
-    const namesArray: string[] = pokemonData?.results?.map((pokemon : {name: string})=>pokemon.name);
+    const namesArray: string[] = pokemonData?.results?.map((pokemon : {name: string})=>pokemon.name) || [];
 
     const { isLoading: detailLoading, isError: detailError, data: pokemonDetailData } = useQuery({
       queryKey: ['pokemonsDetailList', namesArray],
       //이 부분 아직 헷갈림.....
-      queryFn: () => Promise.all(namesArray.map((name) => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/${name}`))),
+      queryFn: () => {
+        if (namesArray.length > 0) {
+          return Promise.all(namesArray.map((name) => getPoketDetailApi(`https://pokeapi.co/api/v2/pokemon/${name}`)))
+        } else {
+          return Promise.resolve([]); // 또는 빈 배열 또는 다른 초기값으로 처리
+        }
+      },
     });
     if (isLoading || detailLoading) return (
     <LoadingSection>

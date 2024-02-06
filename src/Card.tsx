@@ -45,8 +45,6 @@ const CardSection = styled.section`
   }  
   &:active {
     transition: all 0.5s ease;
-    transform: translateY(-6px); 
-    transform:rotate3d(0, 1, 0, 180deg) ;
     }
   img {
     width: 100%;
