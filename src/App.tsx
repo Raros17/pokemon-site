@@ -21,10 +21,13 @@ function App() {
     <Sidebar/>
     <CardListSection >
       <ShowPoketmonData/>
-    </CardListSection>    
+    </CardListSection>        
+  <div style={{backgroundColor:"red", height: "80px", width:"100%"}}></div>
   </section>
+  
   </ThemeProvider>
   </QueryClientProvider>
+  
 }
 export default App;
 
