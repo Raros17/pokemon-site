@@ -3,7 +3,7 @@ import CardList from "./CardList";
 import { getPoketmonDataApi } from "./getPoketDataApi";
 import styled from "styled-components";
 import getPoketDetailApi from "./getPoketDetailApi";
-import { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 
 interface Ability {
   ability: {
@@ -13,6 +13,19 @@ interface Ability {
   is_hidden: boolean;
   slot: number;
 }
+
+interface Pokemon {
+  name: string;
+  url: string;
+}
+
+interface PokemonData {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Pokemon[];
+}
+
 
 interface Stat {
   base_stat: number;
@@ -41,7 +54,7 @@ interface Move {
   }[];
 }
 
-interface PokemonDetail {
+interface PokemonDetailData {
   abilities: Ability[];
   base_experience: number;
   height: number;
@@ -78,50 +91,42 @@ interface PokemonDetail {
 
 
 function ShowPoketmonData(): JSX.Element {
-   const [allPokemonDetailData, setAllPokemonDetailData] = useState<PokemonDetail[]>([]);
+    const [allPokemonData, setAllPokemonData] = useState<PokemonData[]>([])
+    const [allPokemonDetailData, setAllPokemonDetailData] = useState<PokemonDetailData[]>([]);
     const [pokeNum, setPokeNum] = useState(0);
     const [apiUrl, setApiUrl] = useState(`https://pokeapi.co/api/v2/pokemon?limit=12&offset=0`);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    // const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-    //   const selectedValue = parseInt(event.target.value, 10);
-    //   setShowCard(selectedValue)
-    //   setPokeNum(0);
-    //   await setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=${selectedValue}&offset=0`);
-    //   refetch()
-    // }
+    console.log(apiUrl)
+    console.log(pokeNum)
+    console.log("allPokemondata", allPokemonData)
 
-    const handleObserver = async(entries:IntersectionObserverEntry[]) => {
+    useEffect(()=> {
+      const handleObserver = async(entries:IntersectionObserverEntry[]) => {
       const target = entries[0];
       if(target.isIntersecting && !isLoadingMore){
         setIsLoadingMore(true);
-        await nextPageUrl();
-        setIsLoadingMore(false);    
+        nextPageUrl();
+        setIsLoadingMore(false)
       }
-    }
+    }         
 
-    const nextPageUrl = () =>{
+    const nextPageUrl = ()=>{
       const nextPokeList = pokeNum + 12;
       setPokeNum(nextPokeList);
       setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=12&offset=${nextPokeList}`)
     }
 
-    useEffect(()=> {
-       const observer = new IntersectionObserver(handleObserver, {threshold:0});  
+    const observer = new IntersectionObserver(handleObserver, {threshold:0});  
        const observerTarget = document.getElementById("target");
        if(observerTarget){
         observer.observe(observerTarget);
        }
-       console.log(observerTarget)
        return () => {
         observer.disconnect();
        }
-      }, []);
+      }, [pokeNum, isLoadingMore, apiUrl]);
    
-    //setApiUrl은 비동기로 동작하지 않으므로 refetch가 호출되기 전에 apiUrl이 업데이트되지 않을 수 있습니다.
-    //async await로 refetch()실행. setApiUrl이 완료될 때까지 기다린 후에 refetch를 호출
-
-
 
     const {isLoading, isError, data: pokemonData} = useQuery({
       queryKey: ['pokemonsDataList'],
@@ -131,9 +136,18 @@ function ShowPoketmonData(): JSX.Element {
       refetchOnWindowFocus: false,
     })
 
-    const namesArray: string[] = pokemonData?.results?.map((pokemon : {name: string})=>pokemon.name) || [];
+    useEffect(()=>{
+      if(!isLoading&&pokemonData){
+        setAllPokemonData((prevData)=> [...prevData, pokemonData])
+      }
+    }, [isLoading, pokemonData])
 
-    const { isLoading: detailLoading, isError: detailError, data: newPokemonDetailData } = useQuery<PokemonDetail[], Error>({
+
+
+    const namesArray: string[] = allPokemonData.filter(data => data && data.results).flatMap(data => data.results.map((pokemon: Pokemon) => pokemon.name)) || [];
+    console.log(namesArray)
+   
+    const { isLoading: detailLoading, isError: detailError, data: pokemonDetailData } = useQuery<PokemonDetailData[], Error>({
       queryKey: ['pokemonsDetailList', namesArray],
       //이 부분 아직 헷갈림.....
       queryFn: () => {
@@ -146,18 +160,31 @@ function ShowPoketmonData(): JSX.Element {
     });
 
     useEffect(()=>{
-      if(!detailLoading&& newPokemonDetailData){
-        setAllPokemonDetailData((prevData)=>[...prevData, ...newPokemonDetailData])
+      if(!isLoading && pokemonData){
+        setAllPokemonData((prevData)=>[...prevData, pokemonData])
       }
-    }, [detailLoading, newPokemonDetailData])
+    }, [isLoading, pokemonData]);
+
+    useEffect(()=>{
+      if(!detailLoading && pokemonDetailData){
+        setAllPokemonDetailData((prevData)=>[...prevData, ...pokemonDetailData])
+      }
+    }, [detailLoading, pokemonDetailData])
+    
+    useEffect(() => {
+      if (!detailLoading && pokemonDetailData) {
+        setAllPokemonDetailData((prevData) => [...prevData, ...pokemonDetailData]);
+      }
+    }, [detailLoading, pokemonDetailData, namesArray]);
 
     if (isLoading || detailLoading || isLoadingMore) return (
     <LoadingSection>
       <img src="./src/assets/image/loading_img.gif"></img>
-      </LoadingSection>
+    </LoadingSection>
     )
 
     if (isError || detailError) return <span>Error! 데이터를 받아오는데 문제가 발생했습니다.</span>
+
     return (
       <>
         <section style={{width: "100%"}}>
@@ -179,19 +206,4 @@ justify-content: center;
 img{
   height: 20%;
 }
-`;
-
-const SelectCardNum = styled.select`
-  position: absolute;
-  top: 120px;
-  right: 120px;
-  width: 130px;
-  height: 25px;
-  font-size: 16px;
-  text-align: center;
-  border-radius: 5px;
-  color: #555;
-  cursor: pointer;
-  border: 3px solid #a9d5fb ;
-  font-family: 'Roboto Slab', Georgia, 'Times New Roman', Times, serif;   
 `;

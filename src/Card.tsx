@@ -20,8 +20,8 @@ function Card({name, imgUrl, type, onClick}: PokeData): JSX.Element {
         <img src={`${imgUrl}`} alt='pokemon-img'/>
         <h2 id="pokemon-name">{name}</h2>
         <div style={{display:"flex", justifyContent:"center"}}>            
-        {type.map((pokemonType, index) => (
-            <SkillBtn key={index}>{pokemonType.type.name}</SkillBtn>
+        {type?.map((pokemonType, index) => (
+            <SkillBtn key={index}>{pokemonType?.type.name}</SkillBtn>
           ))}
         </div>
     </CardSection>

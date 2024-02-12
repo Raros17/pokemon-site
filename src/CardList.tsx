@@ -3,10 +3,10 @@ import { openModal } from "./store/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import CardModal from "./CardModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
   interface CardListProps {
-    detailData: PokemonDetail[] | undefined;
+    allPokemonData: PokemonDetailData[] | undefined;
   }
 
   interface Ability {
@@ -45,7 +45,7 @@ import { useState } from "react";
     }[];
   }
   
-  interface PokemonDetail {
+  interface PokemonDetailData {
     abilities: Ability[];
     base_experience: number;
     height: number;
@@ -80,33 +80,39 @@ import { useState } from "react";
     weight: number;
   }
 
-  function CardList({ detailData }: CardListProps): JSX.Element {
+  function CardList({ allPokemonData }: CardListProps): JSX.Element {
     const {isOpen} = useSelector((store: RootState)=> store.modal);
     const dispatch = useDispatch();    
-    let pokemons: PokemonDetail[] = [];  
+    let pokemons: PokemonDetailData[] = [];  
 
-    if (Array.isArray(detailData)) {
-      pokemons = detailData;
-    } else if (detailData) {
-      pokemons = [detailData];
-    }
+    if(allPokemonData){
+    if (Array.isArray(allPokemonData)) {
+      pokemons = allPokemonData;
+    } else if (allPokemonData) {
+      pokemons = [allPokemonData];
+    }}
 
-    const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetail | null>(null);
+    const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetailData | null>(null);
 
-    const handleOpenModal = (pokemon: PokemonDetail) => {
+    const handleOpenModal = (pokemon: PokemonDetailData) => {
       setSelectedPokemon(pokemon);
       dispatch(openModal());
     };
 
+    useEffect(()=>{
+      console.log("allPokemonData updated:", pokemons)
+    }, [allPokemonData]);
+
+    console.log("카드리스트")
     return (
       <section style={{display:"flex", justifyContent:"center", width:"100%"}}>
         <div style={{ display: "grid", gridTemplateColumns:"repeat(4,1fr)", gap:"60px"}}>
-          {pokemons.map((pokemon: PokemonDetail, index: number) => (
+          {pokemons.map((pokemon: PokemonDetailData, index: number) => (
           <Card
             key={index}
             name={pokemon.name}
             type={pokemon.types}
-            imgUrl={pokemon.sprites.front_default}
+            imgUrl={pokemon.sprites?.front_default}
             onClick={() => handleOpenModal(pokemon)}
           />
         ))}
