@@ -92,6 +92,7 @@ import { useState } from "react";
     }
 
     const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetail | null>(null);
+
     const handleOpenModal = (pokemon: PokemonDetail) => {
       setSelectedPokemon(pokemon);
       dispatch(openModal());
