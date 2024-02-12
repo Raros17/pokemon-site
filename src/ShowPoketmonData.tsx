@@ -42,7 +42,7 @@ function ShowPoketmonData(): JSX.Element {
       queryKey: ['pokemonsDataList'],
       queryFn: ()=> getPoketmonDataApi(apiUrl),
       staleTime: 100,
-      cacheTime: 5000, 
+      cacheTime: 50000, 
       refetchOnWindowFocus: false,
     })
 

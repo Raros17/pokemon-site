@@ -7,10 +7,37 @@ import { useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import {dark, light} from "./styles/theme"
 import GlobalStyles from "./styles/GlobalStyles";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
-
 function App() {
+  interface PokeListInterface {
+    //인터페이스 정의
+  }
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pokeListArr, setPokeListArr] = useState<PokeListInterface[]>([]);
+  
+  const handleObserver = (entries) => {
+    const target = entries[0];
+    if(target.isIntersecting && !isLoading){
+      setPage((prevPage)=> prevPage +1);
+    }
+  }
+  useEffect(()=> {
+     const observer = new IntersectionObserver(handleObserver);  
+     const observerTarget = document.getElementById("target");
+     if(observerTarget){
+      observer.observe(observerTarget);
+     }
+
+  console.log(observerTarget)
+     return () => {
+      observer.disconnect();
+     }
+    }, []);
+ 
+
   const isDarkTheme = useSelector((state: RootState) => state.theme.darkTheme);
   const theme = isDarkTheme ? dark : light;
   return <QueryClientProvider client={queryClient}>
@@ -22,7 +49,7 @@ function App() {
     <CardListSection >
       <ShowPoketmonData/>
     </CardListSection>        
-  <div style={{backgroundColor:"red", height: "80px", width:"100%"}}></div>
+  <div style={{backgroundColor:"red", height: "80px", width:"100%"}} id="target"></div>
   </section>
   
   </ThemeProvider>
