@@ -3,7 +3,7 @@ import CardList from "./CardList";
 import { getPoketmonDataApi } from "./getPoketDataApi";
 import styled from "styled-components";
 import getPoketDetailApi from "./getPoketDetailApi";
-import {useEffect, useState } from "react";
+import {useEffect, useState, useCallback } from "react";
 
 interface Ability {
   ability: {
@@ -92,40 +92,44 @@ interface PokemonDetailData {
 
 function ShowPoketmonData(): JSX.Element {
     const [allPokemonData, setAllPokemonData] = useState<PokemonData[]>([])
-    const [allPokemonDetailData, setAllPokemonDetailData] = useState<PokemonDetailData[]>([]);
     const [pokeNum, setPokeNum] = useState(0);
     const [apiUrl, setApiUrl] = useState(`https://pokeapi.co/api/v2/pokemon?limit=12&offset=0`);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    console.log(apiUrl)
-    console.log(pokeNum)
-    console.log("allPokemondata", allPokemonData)
+   
+    // console.log(apiUrl)
+    // console.log("allPokemondata", allPokemonData)
 
-    useEffect(()=> {
-      const handleObserver = async(entries:IntersectionObserverEntry[]) => {
-      const target = entries[0];
-      if(target.isIntersecting && !isLoadingMore){
-        setIsLoadingMore(true);
-        nextPageUrl();
-        setIsLoadingMore(false)
-      }
-    }         
-
-    const nextPageUrl = ()=>{
+    const nextPageUrl = useCallback(() => {
       const nextPokeList = pokeNum + 12;
       setPokeNum(nextPokeList);
-      setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=12&offset=${nextPokeList}`)
-    }
-
-    const observer = new IntersectionObserver(handleObserver, {threshold:0});  
-       const observerTarget = document.getElementById("target");
-       if(observerTarget){
+      setApiUrl(`https://pokeapi.co/api/v2/pokemon?limit=12&offset=${nextPokeList}`);
+      console.log("next")
+    }, [pokeNum, setPokeNum, setApiUrl]);
+    
+    const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && !isLoadingMore) {
+        setIsLoadingMore(true);
+        nextPageUrl();
+        setIsLoadingMore(false);
+        console.log("observer")
+      }
+    }, [isLoadingMore, nextPageUrl]);
+    
+    useEffect(() => {
+      const observer = new IntersectionObserver(handleObserver, { threshold: 0 });
+      const observerTarget = document.getElementById("target");
+      console.log("관찰useEffect")
+      if (observerTarget) {
         observer.observe(observerTarget);
-       }
-       return () => {
+      }    
+      const cleanup = () => {
         observer.disconnect();
-       }
-      }, [pokeNum, isLoadingMore, apiUrl]);
+        setIsLoadingMore(false);
+      }
+      return cleanup;
+    }, [handleObserver, setIsLoadingMore]);
    
 
     const {isLoading, isError, data: pokemonData} = useQuery({
@@ -136,15 +140,15 @@ function ShowPoketmonData(): JSX.Element {
       refetchOnWindowFocus: false,
     })
 
-    useEffect(()=>{
-      if(!isLoading&&pokemonData){
-        setAllPokemonData((prevData)=> [...prevData, pokemonData])
-      }
-    }, [isLoading, pokemonData])
+    // useEffect(()=>{
+    //   if(!isLoading&&pokemonData){
+    //     setAllPokemonData((prevData)=> [...prevData, pokemonData])
+    //   }
+    // }, [isLoading, pokemonData])
 
 
 
-    const namesArray: string[] = allPokemonData.filter(data => data && data.results).flatMap(data => data.results.map((pokemon: Pokemon) => pokemon.name)) || [];
+    const namesArray: string[] = allPokemonData.flatMap((data) => (data.results ? data.results.map((pokemon: Pokemon) => pokemon.name) : []));
     console.log(namesArray)
    
     const { isLoading: detailLoading, isError: detailError, data: pokemonDetailData } = useQuery<PokemonDetailData[], Error>({
@@ -159,38 +163,29 @@ function ShowPoketmonData(): JSX.Element {
       }
     });
 
+   // console.log("pokemondetail", pokemonDetailData)
+
     useEffect(()=>{
       if(!isLoading && pokemonData){
         setAllPokemonData((prevData)=>[...prevData, pokemonData])
+        console.log("setAll")
       }
     }, [isLoading, pokemonData]);
-
-    useEffect(()=>{
-      if(!detailLoading && pokemonDetailData){
-        setAllPokemonDetailData((prevData)=>[...prevData, ...pokemonDetailData])
-      }
-    }, [detailLoading, pokemonDetailData])
-    
-    useEffect(() => {
-      if (!detailLoading && pokemonDetailData) {
-        setAllPokemonDetailData((prevData) => [...prevData, ...pokemonDetailData]);
-      }
-    }, [detailLoading, pokemonDetailData, namesArray]);
-
-    if (isLoading || detailLoading || isLoadingMore) return (
-    <LoadingSection>
-      <img src="./src/assets/image/loading_img.gif"></img>
-    </LoadingSection>
-    )
 
     if (isError || detailError) return <span>Error! 데이터를 받아오는데 문제가 발생했습니다.</span>
 
     return (
       <>
-        <section style={{width: "100%"}}>
-          <CardList detailData={allPokemonDetailData}></CardList>
-          <div style={{backgroundColor:"red", height: "80px", width:"100%"}} id="target"></div>
-        </section>
+        <section style={{ width: "100%" }}>
+      {isLoading || detailLoading || isLoadingMore ? (
+        <LoadingSection>
+          <img src="./src/assets/image/loading_img.gif" alt="loading"></img>
+        </LoadingSection>
+      ) : (
+        <CardList detailData={pokemonDetailData || []}></CardList>
+      )}
+      <div style={{ backgroundColor: "red", height: "80px", width: "100%" }} id="target"></div>
+    </section>
       </>      
     )  
   }
