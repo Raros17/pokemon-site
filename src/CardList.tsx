@@ -3,10 +3,10 @@ import { openModal } from "./store/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store/store";
 import CardModal from "./CardModal";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 
   interface CardListProps {
-    allPokemonData: PokemonDetailData[] | undefined;
+    detailData: PokemonDetailData[] | undefined;
   }
 
   interface Ability {
@@ -80,17 +80,20 @@ import { useEffect, useState } from "react";
     weight: number;
   }
 
-  function CardList({ allPokemonData }: CardListProps): JSX.Element {
+  function CardList({ detailData }: CardListProps): JSX.Element {
     const {isOpen} = useSelector((store: RootState)=> store.modal);
     const dispatch = useDispatch();    
     let pokemons: PokemonDetailData[] = [];  
 
-    if(allPokemonData){
-    if (Array.isArray(allPokemonData)) {
-      pokemons = allPokemonData;
-    } else if (allPokemonData) {
-      pokemons = [allPokemonData];
-    }}
+    // if(detailData){
+    // if (Array.isArray(detailData)) {
+    //   pokemons = detailData;
+    // } else if (detailData) {
+    //   pokemons = [detailData];
+    // }}
+    if (detailData) {
+      pokemons = Array.isArray(detailData) ? detailData : [detailData];
+    }
 
     const [selectedPokemon, setSelectedPokemon] = useState<PokemonDetailData | null>(null);
 
@@ -98,10 +101,6 @@ import { useEffect, useState } from "react";
       setSelectedPokemon(pokemon);
       dispatch(openModal());
     };
-
-    useEffect(()=>{
-      console.log("allPokemonData updated:", pokemons)
-    }, [allPokemonData]);
 
     console.log("카드리스트")
     return (

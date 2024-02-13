@@ -10,8 +10,6 @@ import GlobalStyles from "./styles/GlobalStyles";
 
 const queryClient = new QueryClient();
 function App() { 
-
-
   const isDarkTheme = useSelector((state: RootState) => state.theme.darkTheme);
   const theme = isDarkTheme ? dark : light;
   return <QueryClientProvider client={queryClient}>
@@ -22,10 +20,8 @@ function App() {
     <Sidebar/>
     <CardListSection >
       <ShowPoketmonData/>
-    </CardListSection>        
-  
-  </section>
-  
+    </CardListSection> 
+  </section>  
   </ThemeProvider>
   </QueryClientProvider>
   
